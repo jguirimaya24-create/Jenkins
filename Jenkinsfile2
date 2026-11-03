@@ -1,0 +1,34 @@
+pipeline {
+  agent any
+  options { timestamps() }
+  stages {
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/jguirimaya24-create/Jenkins.git', branch: 'main'
+      }
+    }
+    stage('Build') {
+      steps {
+        bat 'echo === Build : preparation du projet ==='
+        bat 'dir'
+      }
+    }
+    stage('Test') {
+      steps {
+        bat 'echo === Test : verification des fichiers ==='
+        bat 'if exist tp.html (echo tp.html OK) else (exit 1)'
+        bat 'if exist style.css (echo style.css OK) else (exit 1)'
+      }
+    }
+    stage('Delivery') {
+      steps {
+        bat 'echo === Delivery : livraison du projet ==='
+        archiveArtifacts artifacts: '*.html, *.css', fingerprint: true
+      }
+    }
+  }
+  post {
+    success { echo 'Pipeline OK' }
+    failure { echo 'Pipeline KO' }
+  }
+}
