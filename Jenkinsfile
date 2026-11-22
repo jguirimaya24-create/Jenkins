@@ -23,9 +23,9 @@ pipeline {
       steps {
         bat """
           docker rm -f monapp_test 2>nul || ver > nul
-          docker run -d --name monapp_test -p 8081:80 %IMAGE%:%TAG%
-          ping -n 3 127.0.0.1 > nul
-          curl -I http://localhost:8081 | find "200 OK"
+          docker run -d --name monapp_test -p 8085:80 %IMAGE%:%TAG% || exit /b 1
+          ping -n 4 127.0.0.1 > nul
+          curl -sI http://localhost:8085 | find "200 OK" || (docker rm -f monapp_test & exit /b 1)
           docker rm -f monapp_test
         """
       }
@@ -37,10 +37,10 @@ pipeline {
                                           usernameVariable: 'USER',
                                           passwordVariable: 'PASS')]) {
           bat """
-            echo %PASS% | docker login -u %USER% --password-stdin
+            echo %PASS% | docker login -u %USER% --password-stdin || exit /b 1
             docker tag %IMAGE%:%TAG% %IMAGE%:latest
-            docker push %IMAGE%:%TAG%
-            docker push %IMAGE%:latest
+            docker push %IMAGE%:%TAG% || exit /b 1
+            docker push %IMAGE%:latest || exit /b 1
           """
         }
       }
