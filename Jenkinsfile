@@ -45,10 +45,20 @@ pipeline {
         }
       }
     }
+
+    stage('Deploy') {
+      steps {
+        bat """
+          docker compose pull || exit /b 1
+          docker compose up -d || exit /b 1
+          docker ps
+        """
+      }
+    }
   }
 
   post {
-    success { echo 'Build+Test+Push OK' }
-    failure { echo 'Build/Tests/Push KO' }
+    success { echo 'Build+Test+Push+Deploy OK' }
+    failure { echo 'Build/Tests/Push/Deploy KO' }
   }
 }
