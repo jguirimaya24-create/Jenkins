@@ -37,7 +37,7 @@ pipeline {
                                           usernameVariable: 'USER',
                                           passwordVariable: 'PASS')]) {
           bat """
-            echo %PASS% | docker login -u %USER% --password-stdin || exit /b 1
+            echo %PASS%| docker login -u %USER% --password-stdin || exit /b 1
             docker tag %IMAGE%:%TAG% %IMAGE%:latest
             docker push %IMAGE%:%TAG% || exit /b 1
             docker push %IMAGE%:latest || exit /b 1
